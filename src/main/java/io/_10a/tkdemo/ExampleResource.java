@@ -1,9 +1,15 @@
 package io._10a.tkdemo;
 
+import java.util.List;
+import javax.inject.Inject;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -15,9 +21,11 @@ import org.slf4j.LoggerFactory;
 
 @Path("/")
 @Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ExampleResource {
-
 	Logger logger = LoggerFactory.getLogger(ExampleResource.class);
+
+	@Inject GreetingController greetingController;
 
 	@GET
 	@Path("/hello")
@@ -51,6 +59,50 @@ public class ExampleResource {
 			return "Wszystko ok!";
 		} else {
 			throw new NotFoundException();
+		}
+	}
+
+	@GET
+	@Path("/languages/all")
+	public List<String> getAllLanguages() {
+		return greetingController.getAllLanguages();
+	}
+
+	@GET
+	@Path("/greeting/{lang}")
+	public Greeting getGreetingForLanguage(@PathParam("lang") String lang) {
+		final Greeting greetingForLang = greetingController.getGreetingForLang(lang);
+		if (greetingForLang != null) {
+			return greetingForLang;
+		} else {
+			throw new NotFoundException();
+		}
+	}
+
+	@PUT
+	@Path("/greting")
+	public Response createNewGreeting(GreetingDTO greetingDTO) {
+		if (greetingController.createNewGreeting(greetingDTO)) {
+			return Response.status(201).build();
+		} else {
+			return Response.status(409).build();
+		}
+	}
+
+	@POST
+	@Path("/greeting/{id}")
+	public Greeting updateGreeting(@PathParam("id") Long greetingId, GreetingDTO greetingDTO) {
+		return greetingController.updateGreeting(greetingId, greetingDTO);
+	}
+
+	@DELETE
+	@Path("/greeting/{id}")
+	public Response deleteGreeting(@PathParam("id") Long greetingId) {
+		boolean deleted =  greetingController.deleteGreeting(greetingId);
+		if (deleted) {
+			return Response.ok().build();
+		} else {
+			return Response.status(404).build();
 		}
 	}
 }
