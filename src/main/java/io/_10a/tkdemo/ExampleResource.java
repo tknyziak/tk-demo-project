@@ -27,6 +27,7 @@ public class ExampleResource {
 
 	@Inject GreetingController greetingController;
 
+
 	@GET
 	@Path("/hello")
 	public String hello() {
@@ -70,8 +71,9 @@ public class ExampleResource {
 
 	@GET
 	@Path("/greeting/{lang}")
-	public Greeting getGreetingForLanguage(@PathParam("lang") String lang) {
-		final Greeting greetingForLang = greetingController.getGreetingForLang(lang);
+	@Produces(MediaType.APPLICATION_JSON)
+	public GreetingDTO getGreetingForLanguage(@PathParam("lang") String lang) {
+		final GreetingDTO greetingForLang = greetingController.getGreetingForLang(lang);
 		if (greetingForLang != null) {
 			return greetingForLang;
 		} else {

@@ -11,23 +11,22 @@ public class GreetingController {
 
 	@Inject EntityManager entityManager;
 
+	@Inject GreetingMapper greetingMapper;
+
 	public List<String> getAllLanguages() {
 		return entityManager.createNamedQuery("Greeting.findAllLanguages", String.class).getResultList();
 	}
 
-	public Greeting getGreetingForLang(String lang) {
-		return entityManager.createNamedQuery("Greeting.findByLanguage", Greeting.class)
+	public GreetingDTO getGreetingForLang(String lang) {
+		return entityManager.createNamedQuery("Greeting.findByLanguage", GreetingDTO.class)
 				.setParameter("lang", lang).getResultList().stream().findFirst().orElse(null);
 	}
 
 	@Transactional
 	public boolean createNewGreeting(GreetingDTO greetingDTO) {
-		Greeting greeting = new Greeting();
-		greeting.setLanguage(greetingDTO.lang());
-		greeting.setGreeting(greetingDTO.greeting());
+		Greeting greeting = greetingMapper.fromGreetingDTO(greetingDTO);
 
 		entityManager.persist(greeting);
-
 		return true;
 	}
 
