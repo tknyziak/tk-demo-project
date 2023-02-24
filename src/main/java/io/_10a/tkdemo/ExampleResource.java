@@ -73,7 +73,7 @@ public class ExampleResource {
 	@Path("/greeting/{lang}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public GreetingDTO getGreetingForLanguage(@PathParam("lang") String lang) {
-		final GreetingDTO greetingForLang = greetingController.getGreetingForLang(lang);
+		final GreetingDTO greetingForLang = greetingController.getGreetingForLangWithCriteria(lang);
 		if (greetingForLang != null) {
 			return greetingForLang;
 		} else {

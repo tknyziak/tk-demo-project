@@ -1,12 +1,15 @@
 package io._10a.tkdemo;
 
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -32,6 +35,11 @@ public class Greeting {
 
 	@Column(name = "GREETING")
 	private String greeting;
+
+	@OneToMany
+	@JoinColumn(name = "GREETING_ID", referencedColumnName = "GREETING_ID")
+	private Set<Greeter> greeters;
+
 
 	public Long getId() {
 		return id;
