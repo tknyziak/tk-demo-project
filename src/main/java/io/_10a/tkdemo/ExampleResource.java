@@ -70,6 +70,13 @@ public class ExampleResource {
 	}
 
 	@GET
+	@Path("/greetings/all")
+	public List<GreetingDTO> getAllGreetings() {
+		return greetingController.getGreetingWithTransformer();
+	}
+
+
+	@GET
 	@Path("/greeting/{lang}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public GreetingDTO getGreetingForLanguage(@PathParam("lang") String lang) {

@@ -1,6 +1,10 @@
 package io._10a.tkdemo;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -9,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.SetJoin;
 import javax.transaction.Transactional;
+import org.hibernate.transform.ResultTransformer;
 
 @RequestScoped
 public class GreetingController {
@@ -82,4 +87,39 @@ public class GreetingController {
 		}
 		return false;
 	}
+
+	@SuppressWarnings("unchecked")
+	public List<GreetingDTO> getGreetingWithTransformer() {
+
+		// SELECT g.id, g.language, g.greeting, gt.name FROM Greeting g LEFT JOIN FETCH g.greeter gt
+
+		return entityManager.createNamedQuery("Greeting.forTransformer")
+				.unwrap(org.hibernate.query.Query.class)
+				.setResultTransformer(new ResultTransformer() {
+
+					final Map<Long, GreetingDTO> myDTOs = new LinkedHashMap<>();
+
+					@Override public Object transformTuple(Object[] objects, String[] strings) {
+
+						Long greetingId = (Long)objects[0];
+						myDTOs.putIfAbsent(greetingId, new GreetingDTO(
+								(String) objects[1],
+								(String) objects[2],
+								new LinkedHashSet<>()
+						));
+
+						if (objects[3] instanceof String) {
+							myDTOs.get(greetingId).greeters().add(new GreeterDTO((String) objects[3]));
+						}
+
+						return myDTOs.get(greetingId);
+					}
+
+					@Override public List transformList(List list) {
+						return new ArrayList(myDTOs.values());
+					}
+				}).getResultList();
+
+	}
+
 }

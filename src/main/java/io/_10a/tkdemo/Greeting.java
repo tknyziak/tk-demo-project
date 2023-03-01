@@ -21,7 +21,10 @@ import javax.persistence.Table;
 		name = "Greeting.findAllLanguages", query = "SELECT g.language FROM Greeting g"
 )
 @NamedQuery(
-		name = "Greeting.findByLanguage", query = "SELECT NEW io._10a.tkdemo.GreetingDTO(g.language, g.greeting) FROM Greeting g where g.language = :lang"
+		name = "Greeting.findByLanguage", query = "SELECT g FROM Greeting g where g.language = :lang"
+)
+@NamedQuery(
+		name = "Greeting.forTransformer", query = "SELECT g.id, g.language, g.greeting, gt.name FROM Greeting g LEFT JOIN g.greeters gt"
 )
 public class Greeting {
 
